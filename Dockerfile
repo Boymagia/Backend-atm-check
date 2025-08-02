@@ -1,17 +1,16 @@
 # Estágio 1: Build
-# Usa uma imagem base com o JDK 17 para compilar o código
-FROM openjdk:17-jdk-slim as builder
+# Usa uma imagem base com o JDK 17 do Eclipse Temurin
+FROM eclipse-temurin:17-jdk-focal as builder
 
 # Define o diretório de trabalho no contêiner
 WORKDIR /app
 
 # Copia o Maven Wrapper e o arquivo pom.xml
-# Isso permite que o Maven baixe as dependências primeiro, aproveitando o cache do Docker
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
-# Executa o build apenas para baixar as dependências do Maven e armazena em cache
+# Executa o build para baixar as dependências e armazena em cache
 RUN ./mvnw dependency:go-offline
 
 # Copia o código-fonte da aplicação
@@ -21,8 +20,8 @@ COPY src src
 RUN ./mvnw clean install -DskipTests
 
 # Estágio 2: Ambiente de Execução
-# Usa uma imagem mais leve que contém apenas o JRE para rodar a aplicação
-FROM openjdk:17-jre-slim
+# Usa uma imagem mais leve com o JRE do Eclipse Temurin
+FROM eclipse-temurin:17-jre-focal
 
 # Define o diretório de trabalho no contêiner
 WORKDIR /app
@@ -30,8 +29,8 @@ WORKDIR /app
 # Copia o arquivo JAR do estágio de build para o estágio de execução
 COPY --from=builder /app/target/*.jar ./app.jar
 
-# Expõe a porta que a aplicação Spring Boot irá usar (porta padrão 8080)
+# Expõe a porta que a aplicação Spring Boot irá usar
 EXPOSE 8080
 
-# Comando para iniciar a aplicação quando o contêiner for executado
+# Comando para iniciar a aplicação
 ENTRYPOINT ["java", "-jar", "app.jar"]

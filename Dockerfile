@@ -1,0 +1,37 @@
+# Estágio 1: Build
+# Usa uma imagem base com o JDK 17 para compilar o código
+FROM openjdk:17-jdk-slim as builder
+
+# Define o diretório de trabalho no contêiner
+WORKDIR /app
+
+# Copia o Maven Wrapper e o arquivo pom.xml
+# Isso permite que o Maven baixe as dependências primeiro, aproveitando o cache do Docker
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+# Executa o build apenas para baixar as dependências do Maven e armazena em cache
+RUN ./mvnw dependency:go-offline
+
+# Copia o código-fonte da aplicação
+COPY src src
+
+# Compila o projeto, empacota em um JAR e pula os testes
+RUN ./mvnw clean install -DskipTests
+
+# Estágio 2: Ambiente de Execução
+# Usa uma imagem mais leve que contém apenas o JRE para rodar a aplicação
+FROM openjdk:17-jre-slim
+
+# Define o diretório de trabalho no contêiner
+WORKDIR /app
+
+# Copia o arquivo JAR do estágio de build para o estágio de execução
+COPY --from=builder /app/target/*.jar ./app.jar
+
+# Expõe a porta que a aplicação Spring Boot irá usar (porta padrão 8080)
+EXPOSE 8080
+
+# Comando para iniciar a aplicação quando o contêiner for executado
+ENTRYPOINT ["java", "-jar", "app.jar"]

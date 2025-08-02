@@ -1,4 +1,4 @@
-package com.atm_check.atm_api;
+package atm.check.atmapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

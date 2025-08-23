@@ -1,26 +1,62 @@
 package atm.check.atmapi.model;
 
-import jakarta.persistence.*;
+import java.io.Serializable;
+import java.util.Objects;
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "agentes")
-public class Agente {
+public class Agente implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String nome;
-
+    @Column(unique = true, nullable = false)
     private String usuario;
 
+    @Column(nullable = false)
     private String senha;
 
-    private String localizacao;
+    private String nome;
+
+    @Column
+    private String latitude; // Novo campo para a latitude do agente
+    
+    @Column
+    private String longitude; // Novo campo para a longitude do agente
+
+    @OneToMany(mappedBy = "agente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Atm> atms;
 
     @ManyToOne
-    @JoinColumn(name = "criado_por", referencedColumnName = "id")
+    @JoinColumn(name = "criado_por_admin_id", nullable = false)
     private Admin criadoPor;
+
+    public Agente() {}
+
+    // Construtor
+    public Agente(Integer id, String usuario, String senha, String nome, String latitude, String longitude) {
+        this.id = id;
+        this.usuario = usuario;
+        this.senha = senha;
+        this.nome = nome;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
     // Getters e Setters
     public Integer getId() {
@@ -29,14 +65,6 @@ public class Agente {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public String getUsuario() {
@@ -55,12 +83,37 @@ public class Agente {
         this.senha = senha;
     }
 
-    public String getLocalizacao() {
-        return localizacao;
+    public String getNome() {
+        return nome;
     }
 
-    public void setLocalizacao(String localizacao) {
-        this.localizacao = localizacao;
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+    
+    public String getLatitude() {
+        return latitude;
+    }
+    
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+    
+    public String getLongitude() {
+        return longitude;
+    }
+    
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    // Relações
+    public Set<Atm> getAtms() {
+        return atms;
+    }
+
+    public void setAtms(Set<Atm> atms) {
+        this.atms = atms;
     }
 
     public Admin getCriadoPor() {
@@ -69,5 +122,29 @@ public class Agente {
 
     public void setCriadoPor(Admin criadoPor) {
         this.criadoPor = criadoPor;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Agente agente = (Agente) o;
+        return Objects.equals(id, agente.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Agente{" +
+                "id=" + id +
+                ", usuario='" + usuario + '\'' +
+                ", nome='" + nome + '\'' +
+                ", latitude='" + latitude + '\'' +
+                ", longitude='" + longitude + '\'' +
+                '}';
     }
 }

@@ -24,10 +24,10 @@ public class AgenteController {
     @Autowired
     private AgenteService agenteService;
 
-
+   
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Agente agente) {
-      
+        
         Optional<Agente> foundAgente = agenteService.findByUsuarioAndSenha(agente.getUsuario(), agente.getSenha());
         
         if (foundAgente.isPresent()) {
@@ -37,6 +37,7 @@ public class AgenteController {
         }
     }
 
+  
     @PostMapping
     public ResponseEntity<Agente> createAgente(@RequestBody Agente agente) {
         Agente novoAgente = agenteService.saveAgente(agente);

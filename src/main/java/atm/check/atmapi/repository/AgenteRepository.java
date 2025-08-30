@@ -9,6 +9,6 @@ import atm.check.atmapi.model.Agente;
 
 @Repository
 public interface AgenteRepository extends JpaRepository<Agente, Integer> {
-  
+    
     Optional<Agente> findByUsuario(String usuario);
 }

@@ -1,19 +1,9 @@
 package atm.check.atmapi.model;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "agentes")
@@ -34,10 +24,13 @@ public class Agente implements Serializable {
     private String nome;
 
     @Column
-    private String latitude; // Novo campo para a latitude do agente
+    private String localizacao;
+
+    @Column
+    private Double latitude; 
     
     @Column
-    private String longitude; // Novo campo para a longitude do agente
+    private Double longitude; 
 
     @OneToMany(mappedBy = "agente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Atm> atms;
@@ -49,11 +42,12 @@ public class Agente implements Serializable {
     public Agente() {}
 
     // Construtor
-    public Agente(Integer id, String usuario, String senha, String nome, String latitude, String longitude) {
+    public Agente(Integer id, String usuario, String senha, String nome, String localizacao, Double latitude, Double longitude) {
         this.id = id;
         this.usuario = usuario;
         this.senha = senha;
         this.nome = nome;
+        this.localizacao = localizacao;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -91,19 +85,27 @@ public class Agente implements Serializable {
         this.nome = nome;
     }
     
-    public String getLatitude() {
+    public String getLocalizacao() {
+        return localizacao;
+    }
+    
+    public void setLocalizacao(String localizacao) {
+        this.localizacao = localizacao;
+    }
+    
+    public Double getLatitude() {
         return latitude;
     }
     
-    public void setLatitude(String latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
     
-    public String getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
     
-    public void setLongitude(String longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
@@ -143,6 +145,7 @@ public class Agente implements Serializable {
                 "id=" + id +
                 ", usuario='" + usuario + '\'' +
                 ", nome='" + nome + '\'' +
+                ", localizacao='" + localizacao + '\'' +
                 ", latitude='" + latitude + '\'' +
                 ", longitude='" + longitude + '\'' +
                 '}';

@@ -2,14 +2,12 @@ package atm.check.atmapi.dto;
 
 import atm.check.atmapi.model.Agente;
 
-public class AgenteAtmCadastroDTO {
-    
+
+public class AgenteAtmsDTO {
     private Agente agente;
     private Integer numeroDeAtms;
 
-    public AgenteAtmCadastroDTO() {
-    }
-
+  
     public Agente getAgente() {
         return agente;
     }

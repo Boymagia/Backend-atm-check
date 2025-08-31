@@ -1,4 +1,7 @@
 package atm.check.atmapi.model;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,17 +24,17 @@ public class Atm {
 
     private Double longitude;
 
-   
     @ManyToOne
     @JoinColumn(name = "criado_por", referencedColumnName = "id")
     private Admin criadoPor;
 
-    
+    // Adicionado @JsonBackReference para evitar loop infinito na serialização
     @ManyToOne
     @JoinColumn(name = "agente_id", referencedColumnName = "id")
+    @JsonBackReference
     private Agente agente;
 
-    
+    // Getters e Setters
     public Integer getId() {
         return id;
     }

@@ -1,9 +1,21 @@
 package atm.check.atmapi.model;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "agentes")
@@ -32,7 +44,9 @@ public class Agente implements Serializable {
     @Column
     private Double longitude; 
 
+    // Adicionado @JsonManagedReference para evitar loop infinito na serialização JSON
     @OneToMany(mappedBy = "agente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private Set<Atm> atms;
 
     @ManyToOne
@@ -41,7 +55,6 @@ public class Agente implements Serializable {
 
     public Agente() {}
 
-    // Construtor
     public Agente(Integer id, String usuario, String senha, String nome, String localizacao, Double latitude, Double longitude) {
         this.id = id;
         this.usuario = usuario;

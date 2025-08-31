@@ -36,12 +36,12 @@ public class AgenteController {
     }
 
     // Endpoint para login de Agente
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Agente agente) {
+   @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Agente agente) {
         Optional<Agente> foundAgente = agenteService.findByUsuarioAndSenha(agente.getUsuario(), agente.getSenha());
         
         if (foundAgente.isPresent()) {
-            return ResponseEntity.ok("Login de agente bem-sucedido.");
+            return ResponseEntity.ok(foundAgente.get());
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário ou senha inválidos.");
         }

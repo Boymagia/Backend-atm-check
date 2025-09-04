@@ -32,7 +32,8 @@ public class WebConfig implements WebMvcConfigurer {
         // Permite requisições de uma origem específica (o site do seu amigo)
         // para todos os endpoints da sua API.
         registry.addMapping("/**")
-                .allowedOrigins("https://atm-check.netlify.app") // Altera o "*" para o domínio específico
+        .allowedOrigins("*")
+                /* .allowedOrigins("https://atm-check.netlify.app") */// Altera o "*" para o domínio específico
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Permite os métodos necessários
                 .allowedHeaders("*"); // Permite todos os headers
     }

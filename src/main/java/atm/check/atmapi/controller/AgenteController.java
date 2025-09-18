@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import atm.check.atmapi.dto.AgenteAtmCadastroDTO;
 import atm.check.atmapi.model.Agente;
 import atm.check.atmapi.service.AgenteService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/agentes")
@@ -22,8 +24,12 @@ public class AgenteController {
     @Autowired
     private AgenteService agenteService;
 
-    // Endpoint para cadastro de novo agente com seus ATMs
-    // Exemplo: POST /agentes/cadastro?adminId=1
+     @GetMapping
+    public ResponseEntity<List<Agente>> getAllAgentes() {
+        List<Agente> agentes = agenteService.findAllAgentes();
+        return ResponseEntity.ok(agentes);
+    }
+    
     @PostMapping("/cadastro")
     public ResponseEntity<Agente> cadastrarAgenteComAtms(@RequestBody AgenteAtmCadastroDTO dto,
                                                         @RequestParam("adminId") Integer adminId) {
@@ -46,4 +52,5 @@ public class AgenteController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário ou senha inválidos.");
         }
     }
+    
 }

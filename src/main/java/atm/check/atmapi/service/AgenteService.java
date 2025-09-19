@@ -1,5 +1,14 @@
 package atm.check.atmapi.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import atm.check.atmapi.dto.AgenteAtmCadastroDTO;
 import atm.check.atmapi.model.Admin;
 import atm.check.atmapi.model.Agente;
@@ -7,13 +16,6 @@ import atm.check.atmapi.model.Atm;
 import atm.check.atmapi.repository.AdminRepository;
 import atm.check.atmapi.repository.AgenteRepository;
 import atm.check.atmapi.repository.AtmRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; 
-import java.util.List;
-import java.util.Optional;
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class AgenteService {
@@ -22,92 +24,98 @@ public class AgenteService {
     private AgenteRepository agenteRepository;
 
     @Autowired
+    private AtmRepository atmRepository;
+
+    @Autowired
     private AdminRepository adminRepository;
 
     @Autowired
-    private AtmRepository atmRepository;
+    private PasswordEncoder passwordEncoder;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Transactional
+    public Agente cadastrarAgenteComAtms(AgenteAtmCadastroDTO dto, Integer adminId) {
+        // Obter o objeto Agente e o número de ATMs diretamente do DTO
+        Agente agente = dto.getAgente();
+        Integer numeroDeAtms = dto.getNumeroDeAtms();
 
-    // Métodos para Agente
-    public List<Agente> findAllAgentes() {
-        return agenteRepository.findAll();
+        // Verificações
+        if (agente == null || numeroDeAtms == null || numeroDeAtms <= 0) {
+            throw new IllegalArgumentException("O agente e o número de ATMs devem ser válidos.");
+        }
+        
+        Admin admin = adminRepository.findById(adminId)
+            .orElseThrow(() -> new IllegalArgumentException("Admin não encontrado."));
+
+        // Criptografar a senha do agente antes de salvar
+        String senhaCriptografada = passwordEncoder.encode(agente.getSenha());
+        agente.setSenha(senhaCriptografada);
+        agente.setCriadoPor(admin);
+        agenteRepository.save(agente);
+
+        // Criar a lista de ATMs com base no número fornecido
+        List<Atm> atmsParaSalvar = new ArrayList<>();
+        for (int i = 0; i < numeroDeAtms; i++) {
+            Atm atm = new Atm();
+            atm.setLocalizacao(agente.getLocalizacao());
+            atm.setLatitude(agente.getLatitude());
+            atm.setLongitude(agente.getLongitude());
+            atm.setCriadoPor(admin);
+            atm.setAgente(agente);
+            atmsParaSalvar.add(atm);
+        }
+
+        atmRepository.saveAll(atmsParaSalvar);
+
+        return agente;
     }
 
+    @Transactional
+    public Optional<Agente> updateAgente(Integer id, Agente agenteAtualizado) {
+        return agenteRepository.findById(id).map(agenteExistente -> {
+            // Adicionado verificação de nulidade para cada campo a ser atualizado
+            if (agenteAtualizado.getNome() != null) {
+                agenteExistente.setNome(agenteAtualizado.getNome());
+            }
+            if (agenteAtualizado.getUsuario() != null) {
+                agenteExistente.setUsuario(agenteAtualizado.getUsuario());
+            }
+            if (agenteAtualizado.getLocalizacao() != null) {
+                agenteExistente.setLocalizacao(agenteAtualizado.getLocalizacao());
+            }
+            if (agenteAtualizado.getLatitude() != null) {
+                agenteExistente.setLatitude(agenteAtualizado.getLatitude());
+            }
+            if (agenteAtualizado.getLongitude() != null) {
+                agenteExistente.setLongitude(agenteAtualizado.getLongitude());
+            }
+            if (agenteAtualizado.getSenha() != null && !agenteAtualizado.getSenha().isEmpty()) {
+                agenteExistente.setSenha(passwordEncoder.encode(agenteAtualizado.getSenha()));
+            }
+            return agenteRepository.save(agenteExistente);
+        });
+    }
+
+    @Transactional
     public Optional<Agente> findAgenteById(Integer id) {
         return agenteRepository.findById(id);
     }
-
-    public Agente saveAgente(Agente agente) {
-        agente.setSenha(passwordEncoder.encode(agente.getSenha()));
-        return agenteRepository.save(agente);
-    }
-
-    public void deleteAgenteById(Integer id) {
-        agenteRepository.deleteById(id);
-    }
-
+    
     public Optional<Agente> findByUsuarioAndSenha(String usuario, String senha) {
         Optional<Agente> agenteOptional = agenteRepository.findByUsuario(usuario);
-        if (agenteOptional.isPresent() && passwordEncoder.matches(senha, agenteOptional.get().getSenha())) {
-            return agenteOptional;
+        if (agenteOptional.isPresent()) {
+            Agente agente = agenteOptional.get();
+            if (passwordEncoder.matches(senha, agente.getSenha())) {
+                return Optional.of(agente);
+            }
         }
         return Optional.empty();
     }
-
-    public Agente createAgente(Agente agente, Integer adminId) {
-        Optional<Admin> admin = adminRepository.findById(adminId);
-        if (admin.isPresent()) {
-            agente.setCriadoPor(admin.get());
-            agente.setSenha(passwordEncoder.encode(agente.getSenha()));
-            return agenteRepository.save(agente);
-        } else {
-            throw new RuntimeException("Admin não encontrado com o ID: " + adminId);
-        }
+    
+    public List<Agente> findAllAgentes() {
+        return agenteRepository.findAll();
     }
-
-    public Atm createAtm(Atm atm, Integer agenteId, Integer adminId) {
-        Optional<Admin> admin = adminRepository.findById(adminId);
-        Optional<Agente> agente = agenteRepository.findById(agenteId);
-
-        if (admin.isPresent() && agente.isPresent()) {
-            atm.setCriadoPor(admin.get());
-            atm.setAgente(agente.get());
-            return atmRepository.save(atm);
-        } else {
-            throw new RuntimeException("Admin ou Agente não encontrados.");
-        }
-    }
-
-    // NOVO MÉTODO: Cadastra um novo agente com ATMs
-    public Agente cadastrarAgenteComAtms(AgenteAtmCadastroDTO dto, Integer adminId) {
-        Optional<Admin> admin = adminRepository.findById(adminId);
-        if (admin.isEmpty()) {
-            throw new RuntimeException("Admin não encontrado com o ID: " + adminId);
-        }
-
-        // 1. Salva o Agente
-        Agente novoAgente = dto.getAgente();
-        novoAgente.setCriadoPor(admin.get());
-        novoAgente.setSenha(passwordEncoder.encode(novoAgente.getSenha()));
-        agenteRepository.save(novoAgente);
-
-        // 2. Cria e salva os ATMs baseados na localização do agente
-        Set<Atm> atms = new HashSet<>();
-        for (int i = 0; i < dto.getNumeroDeAtms(); i++) {
-            Atm novoAtm = new Atm();
-            novoAtm.setLocalizacao(novoAgente.getLocalizacao());
-            novoAtm.setLatitude(novoAgente.getLatitude());
-            novoAtm.setLongitude(novoAgente.getLongitude());
-            
-            novoAtm.setAgente(novoAgente);
-            novoAtm.setCriadoPor(admin.get());
-            atms.add(novoAtm);
-            atmRepository.save(novoAtm); 
-        }
-        
-        // 3. Associa os ATMs criados ao agente e atualiza-o
-        novoAgente.setAtms(atms);
-        return agenteRepository.save(novoAgente);
+    
+    public void deleteAgenteById(Integer id) {
+        agenteRepository.deleteById(id);
     }
 }

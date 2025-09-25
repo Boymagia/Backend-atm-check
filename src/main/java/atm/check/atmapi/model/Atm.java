@@ -1,6 +1,7 @@
 package atm.check.atmapi.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -47,9 +48,13 @@ public class Atm {
 
     // Construtor padrão
     public Atm() {
+        this.dinheiro = false;
+        this.papel = false;
+        this.levantamentoSemCartao = false;
+        this.sistema = false;
     }
 
-    // Construtor com campos (atualizado com as novas colunas)
+    // Construtor com campos
     public Atm(String localizacao, Double latitude, Double longitude, Boolean dinheiro, Boolean papel, Boolean levantamentoSemCartao, Boolean sistema, Admin criadoPor, Agente agente) {
         this.localizacao = localizacao;
         this.latitude = latitude;

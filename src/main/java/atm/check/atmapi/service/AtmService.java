@@ -1,0 +1,100 @@
+package atm.check.atmapi.service;
+
+import atm.check.atmapi.dto.AtmDTO;
+import atm.check.atmapi.model.Atm;
+import atm.check.atmapi.repository.AtmRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+public class AtmService {
+
+    private final AtmRepository atmRepository;
+
+    @Autowired
+    public AtmService(AtmRepository atmRepository) {
+        this.atmRepository = atmRepository;
+    }
+
+    /**
+     * Cria um novo ATM.
+     * @param atmDto O DTO com os dados do ATM a ser criado.
+     * @return O DTO do ATM recém-criado.
+     */
+    public AtmDTO createAtm(AtmDTO atmDto) {
+        // Mapeia o DTO para a entidade
+        Atm atm = new Atm();
+        atm.setLocalizacao(atmDto.getLocalizacao());
+        atm.setLatitude(atmDto.getLatitude());
+        atm.setLongitude(atmDto.getLongitude());
+        atm.setDinheiro(atmDto.getDinheiro());
+        atm.setPapel(atmDto.getPapel());
+        atm.setLevantamentoSemCartao(atmDto.getLevantamentoSemCartao());
+        atm.setSistema(atmDto.getSistema());
+
+        // Salva a entidade no banco de dados
+        Atm savedAtm = atmRepository.save(atm);
+
+        // Retorna o DTO da entidade salva
+        return new AtmDTO(savedAtm);
+    }
+
+    /**
+     * Retorna uma lista de todos os ATMs.
+     * @return Uma lista de ATMDTOs.
+     */
+    public List<AtmDTO> getAllAtms() {
+        return atmRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Busca um ATM pelo seu ID.
+     * @param id O ID do ATM.
+     * @return Um Optional contendo o ATMDTO se encontrado, ou vazio se não.
+     */
+    public Optional<AtmDTO> getAtmById(Integer id) {
+        return atmRepository.findById(id).map(this::mapToDTO);
+    }
+
+    /**
+     * Atualiza um ATM existente.
+     * @param id O ID do ATM a ser atualizado.
+     * @param atmDto O DTO com os dados de atualização.
+     * @return Um Optional contendo o ATMDTO atualizado, ou vazio se o ATM não for encontrado.
+     */
+    public Optional<AtmDTO> updateAtm(Integer id, AtmDTO atmDto) {
+        return atmRepository.findById(id).map(existingAtm -> {
+            existingAtm.setLocalizacao(atmDto.getLocalizacao());
+            existingAtm.setLatitude(atmDto.getLatitude());
+            existingAtm.setLongitude(atmDto.getLongitude());
+            existingAtm.setDinheiro(atmDto.getDinheiro());
+            existingAtm.setPapel(atmDto.getPapel());
+            existingAtm.setLevantamentoSemCartao(atmDto.getLevantamentoSemCartao());
+            existingAtm.setSistema(atmDto.getSistema());
+            return mapToDTO(atmRepository.save(existingAtm));
+        });
+    }
+
+    /**
+     * Exclui um ATM pelo seu ID.
+     * @param id O ID do ATM a ser excluído.
+     */
+    public void deleteAtm(Integer id) {
+        atmRepository.deleteById(id);
+    }
+
+    /**
+     * Método auxiliar para mapear a entidade Atm para o DTO.
+     * @param atm A entidade Atm.
+     * @return O ATMDTO correspondente.
+     */
+    private AtmDTO mapToDTO(Atm atm) {
+        return new AtmDTO(atm);
+    }
+}

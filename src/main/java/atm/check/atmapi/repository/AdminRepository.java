@@ -9,4 +9,3 @@ import atm.check.atmapi.model.Admin;
 public interface AdminRepository extends JpaRepository<Admin, Integer> {
    
 }
-

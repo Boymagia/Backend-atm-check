@@ -1,42 +1,41 @@
 package atm.check.atmapi.dto;
 
-import atm.check.atmapi.enums.EstadoAtm;
-import java.util.List;
+import atm.check.atmapi.model.Atm;
 
 public class AtmDTO {
-    private String nrSerie;
-    private String modelo;
+
+    private Integer id;
     private String localizacao;
-    private EstadoAtm estado;
-    private List<String> bancos;
+    private Double latitude;
+    private Double longitude;
+    private Boolean dinheiro;
+    private Boolean papel;
+    private Boolean levantamentoSemCartao;
+    private Boolean sistema;
 
     // Construtor padrão
-    public AtmDTO() {}
+    public AtmDTO() {
+    }
 
-    // Construtor com todos os campos
-    public AtmDTO(String nrSerie, String modelo, String localizacao, EstadoAtm estado, List<String> bancos) {
-        this.nrSerie = nrSerie;
-        this.modelo = modelo;
-        this.localizacao = localizacao;
-        this.estado = estado;
-        this.bancos = bancos;
+    // Construtor a partir da entidade Atm
+    public AtmDTO(Atm atm) {
+        this.id = atm.getId();
+        this.localizacao = atm.getLocalizacao();
+        this.latitude = atm.getLatitude();
+        this.longitude = atm.getLongitude();
+        this.dinheiro = atm.getDinheiro();
+        this.papel = atm.getPapel();
+        this.levantamentoSemCartao = atm.getLevantamentoSemCartao();
+        this.sistema = atm.getSistema();
     }
 
     // Getters e Setters
-    public String getNrSerie() {
-        return nrSerie;
+    public Integer getId() {
+        return id;
     }
 
-    public void setNrSerie(String nrSerie) {
-        this.nrSerie = nrSerie;
-    }
-
-    public String getModelo() {
-        return modelo;
-    }
-
-    public void setModelo(String modelo) {
-        this.modelo = modelo;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getLocalizacao() {
@@ -47,20 +46,51 @@ public class AtmDTO {
         this.localizacao = localizacao;
     }
 
-    public EstadoAtm getEstado() {
-        return estado;
+    public Double getLatitude() {
+        return latitude;
     }
 
-    public void setEstado(EstadoAtm estado) {
-        this.estado = estado;
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 
-    public List<String> getBancos() {
-        return bancos;
+    public Double getLongitude() {
+        return longitude;
     }
 
-    public void setBancos(List<String> bancos) {
-        this.bancos = bancos;
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Boolean getDinheiro() {
+        return dinheiro;
+    }
+
+    public void setDinheiro(Boolean dinheiro) {
+        this.dinheiro = dinheiro;
+    }
+
+    public Boolean getPapel() {
+        return papel;
+    }
+
+    public void setPapel(Boolean papel) {
+        this.papel = papel;
+    }
+
+    public Boolean getLevantamentoSemCartao() {
+        return levantamentoSemCartao;
+    }
+
+    public void setLevantamentoSemCartao(Boolean levantamentoSemCartao) {
+        this.levantamentoSemCartao = levantamentoSemCartao;
+    }
+
+    public Boolean getSistema() {
+        return sistema;
+    }
+
+    public void setSistema(Boolean sistema) {
+        this.sistema = sistema;
     }
 }
-

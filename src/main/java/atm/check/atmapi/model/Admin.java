@@ -53,4 +53,3 @@ public class Admin {
         this.senha = senha;
     }
 }
-

@@ -1,7 +1,7 @@
 package atm.check.atmapi.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,15 +24,43 @@ public class Atm {
 
     private Double longitude;
 
+    @Column(name = "dinheiro")
+    private Boolean dinheiro;
+
+    @Column(name = "papel")
+    private Boolean papel;
+
+    @Column(name = "levantamento_sem_cartao")
+    private Boolean levantamentoSemCartao;
+
+    @Column(name = "sistema")
+    private Boolean sistema;
+
     @ManyToOne
     @JoinColumn(name = "criado_por", referencedColumnName = "id")
     private Admin criadoPor;
 
-    // Adicionado @JsonBackReference para evitar loop infinito na serialização
     @ManyToOne
     @JoinColumn(name = "agente_id", referencedColumnName = "id")
     @JsonBackReference
     private Agente agente;
+
+    // Construtor padrão
+    public Atm() {
+    }
+
+    // Construtor com campos (atualizado com as novas colunas)
+    public Atm(String localizacao, Double latitude, Double longitude, Boolean dinheiro, Boolean papel, Boolean levantamentoSemCartao, Boolean sistema, Admin criadoPor, Agente agente) {
+        this.localizacao = localizacao;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.dinheiro = dinheiro;
+        this.papel = papel;
+        this.levantamentoSemCartao = levantamentoSemCartao;
+        this.sistema = sistema;
+        this.criadoPor = criadoPor;
+        this.agente = agente;
+    }
 
     // Getters e Setters
     public Integer getId() {
@@ -65,6 +93,38 @@ public class Atm {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public Boolean getDinheiro() {
+        return dinheiro;
+    }
+
+    public void setDinheiro(Boolean dinheiro) {
+        this.dinheiro = dinheiro;
+    }
+
+    public Boolean getPapel() {
+        return papel;
+    }
+
+    public void setPapel(Boolean papel) {
+        this.papel = papel;
+    }
+
+    public Boolean getLevantamentoSemCartao() {
+        return levantamentoSemCartao;
+    }
+
+    public void setLevantamentoSemCartao(Boolean levantamentoSemCartao) {
+        this.levantamentoSemCartao = levantamentoSemCartao;
+    }
+
+    public Boolean getSistema() {
+        return sistema;
+    }
+
+    public void setSistema(Boolean sistema) {
+        this.sistema = sistema;
     }
 
     public Admin getCriadoPor() {

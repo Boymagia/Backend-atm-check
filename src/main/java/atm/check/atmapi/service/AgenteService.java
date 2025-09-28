@@ -95,6 +95,21 @@ public class AgenteService {
         });
     }
 
+    /**
+     * Retorna o número de ATMs associados a um agente específico.
+     * @param agenteId O ID do Agente.
+     * @return O número de ATMs para aquele agente.
+     * @throws IllegalArgumentException Se o Agente com o ID fornecido não for encontrado.
+     */
+    public Long countAtmsForAgente(Integer agenteId) {
+        if (!agenteRepository.existsById(agenteId)) {
+            // É melhor lançar uma exceção de que o recurso não existe. O Controller deve
+            // converter isso num HTTP 404 Not Found.
+            throw new IllegalArgumentException("Agente com ID " + agenteId + " não encontrado.");
+        }
+        return agenteRepository.countAtmsByAgenteId(agenteId);
+    }
+    
     @Transactional
     public Optional<Agente> findAgenteById(Integer id) {
         return agenteRepository.findById(id);

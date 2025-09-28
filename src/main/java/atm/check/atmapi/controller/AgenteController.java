@@ -42,6 +42,20 @@ public class AgenteController {
                      .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // NOVO ENDPOINT: Retorna a contagem de ATMs para um agente específico.
+    // Exemplo: GET /agentes/1/atm-count
+    @GetMapping("/{id}/atm-count")
+    public ResponseEntity<Long> getAtmCountForAgente(@PathVariable Integer id) {
+        try {
+            Long atmCount = agenteService.countAtmsForAgente(id);
+            // Retorna o número de ATMs com status 200 OK
+            return ResponseEntity.ok(atmCount);
+        } catch (IllegalArgumentException e) {
+            // Se o Agente não for encontrado no serviço, retorna 404 Not Found
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // Endpoint para cadastro de novo agente com seus ATMs
     // Exemplo: POST /agentes/cadastro?adminId=1
     @PostMapping("/cadastro")
@@ -51,6 +65,7 @@ public class AgenteController {
             Agente novoAgente = agenteService.cadastrarAgenteComAtms(dto, adminId);
             return new ResponseEntity<>(novoAgente, HttpStatus.CREATED);
         } catch (RuntimeException e) {
+            // Em caso de erro de validação ou admin não encontrado
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -76,7 +91,7 @@ public class AgenteController {
                      .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-   
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAgenteById(@PathVariable Integer id) {
         agenteService.deleteAgenteById(id);

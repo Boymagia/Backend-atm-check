@@ -8,10 +8,12 @@ public class AtmDTO {
     private String localizacao;
     private Double latitude;
     private Double longitude;
-    private Boolean dinheiro;
-    private Boolean papel;
-    private Boolean levantamentoSemCartao;
-    private Boolean sistema;
+    
+    // CORREÇÃO: Alterado de Boolean para Integer para aceitar 0/1 do modelo Atm.
+    private Integer dinheiro;
+    private Integer papel;
+    private Integer levantamentoSemCartao;
+    private Integer sistema;
 
     // Construtor padrão
     public AtmDTO() {
@@ -23,13 +25,15 @@ public class AtmDTO {
         this.localizacao = atm.getLocalizacao();
         this.latitude = atm.getLatitude();
         this.longitude = atm.getLongitude();
+        
+        // Esta atribuição agora funciona, pois ambos são Integer.
         this.dinheiro = atm.getDinheiro();
         this.papel = atm.getPapel();
         this.levantamentoSemCartao = atm.getLevantamentoSemCartao();
         this.sistema = atm.getSistema();
     }
 
-    // Getters e Setters
+    // Getters e Setters (ajustados para Integer)
     public Integer getId() {
         return id;
     }
@@ -62,35 +66,35 @@ public class AtmDTO {
         this.longitude = longitude;
     }
 
-    public Boolean getDinheiro() {
+    public Integer getDinheiro() {
         return dinheiro;
     }
 
-    public void setDinheiro(Boolean dinheiro) {
+    public void setDinheiro(Integer dinheiro) {
         this.dinheiro = dinheiro;
     }
 
-    public Boolean getPapel() {
+    public Integer getPapel() {
         return papel;
     }
 
-    public void setPapel(Boolean papel) {
+    public void setPapel(Integer papel) {
         this.papel = papel;
     }
 
-    public Boolean getLevantamentoSemCartao() {
+    public Integer getLevantamentoSemCartao() {
         return levantamentoSemCartao;
     }
 
-    public void setLevantamentoSemCartao(Boolean levantamentoSemCartao) {
+    public void setLevantamentoSemCartao(Integer levantamentoSemCartao) {
         this.levantamentoSemCartao = levantamentoSemCartao;
     }
 
-    public Boolean getSistema() {
+    public Integer getSistema() {
         return sistema;
     }
 
-    public void setSistema(Boolean sistema) {
+    public void setSistema(Integer sistema) {
         this.sistema = sistema;
     }
 }

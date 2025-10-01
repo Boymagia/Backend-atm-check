@@ -26,16 +26,16 @@ public class Atm {
     private Double longitude;
 
     @Column(name = "dinheiro")
-    private Boolean dinheiro;
+    private int dinheiro;
 
     @Column(name = "papel")
-    private Boolean papel;
+    private int papel;
 
     @Column(name = "levantamento_sem_cartao")
-    private Boolean levantamentoSemCartao;
+    private int levantamentoSemCartao;
 
     @Column(name = "sistema")
-    private Boolean sistema;
+    private int sistema;
 
     @ManyToOne
     @JoinColumn(name = "criado_por", referencedColumnName = "id")
@@ -48,14 +48,14 @@ public class Atm {
 
     // Construtor padrão
     public Atm() {
-        this.dinheiro = false;
-        this.papel = false;
-        this.levantamentoSemCartao = false;
-        this.sistema = false;
+        this.dinheiro = 0;
+        this.papel = 0;
+        this.levantamentoSemCartao = 0;
+        this.sistema = 0;
     }
 
     // Construtor com campos
-    public Atm(String localizacao, Double latitude, Double longitude, Boolean dinheiro, Boolean papel, Boolean levantamentoSemCartao, Boolean sistema, Admin criadoPor, Agente agente) {
+    public Atm(String localizacao, Double latitude, Double longitude, int dinheiro, int papel, int levantamentoSemCartao, int sistema, Admin criadoPor, Agente agente) {
         this.localizacao = localizacao;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -100,35 +100,35 @@ public class Atm {
         this.longitude = longitude;
     }
 
-    public Boolean getDinheiro() {
+    public int getDinheiro() {
         return dinheiro;
     }
 
-    public void setDinheiro(Boolean dinheiro) {
+    public void setDinheiro(int dinheiro) {
         this.dinheiro = dinheiro;
     }
 
-    public Boolean getPapel() {
+    public int getPapel() {
         return papel;
     }
 
-    public void setPapel(Boolean papel) {
+    public void setPapel(int papel) {
         this.papel = papel;
     }
 
-    public Boolean getLevantamentoSemCartao() {
+    public int getLevantamentoSemCartao() {
         return levantamentoSemCartao;
     }
 
-    public void setLevantamentoSemCartao(Boolean levantamentoSemCartao) {
+    public void setLevantamentoSemCartao(int levantamentoSemCartao) {
         this.levantamentoSemCartao = levantamentoSemCartao;
     }
 
-    public Boolean getSistema() {
+    public int getSistema() {
         return sistema;
     }
 
-    public void setSistema(Boolean sistema) {
+    public void setSistema(int sistema) {
         this.sistema = sistema;
     }
 

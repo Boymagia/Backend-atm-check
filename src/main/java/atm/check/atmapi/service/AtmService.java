@@ -64,19 +64,37 @@ public class AtmService {
 
     /**
      * Atualiza um ATM existente.
+     *
+     * CORREÇÃO: Adicionada a lógica de verificação de NULL (patch) para garantir
+     * que a localização só seja atualizada se o valor for enviado no DTO,
+     * prevenindo o erro 500 se o campo for NOT NULL na base de dados.
+     *
      * @param id O ID do ATM a ser atualizado.
      * @param atmDto O DTO com os dados de atualização.
      * @return Um Optional contendo o ATMDTO atualizado, ou vazio se o ATM não for encontrado.
      */
     public Optional<AtmDTO> updateAtm(Integer id, AtmDTO atmDto) {
         return atmRepository.findById(id).map(existingAtm -> {
-            existingAtm.setLocalizacao(atmDto.getLocalizacao());
-            existingAtm.setLatitude(atmDto.getLatitude());
-            existingAtm.setLongitude(atmDto.getLongitude());
+
+            // 1. Campos de localização: APENAS atualiza se não forem NULL no DTO.
+            if (atmDto.getLocalizacao() != null) {
+                existingAtm.setLocalizacao(atmDto.getLocalizacao());
+            }
+            if (atmDto.getLatitude() != null) {
+                existingAtm.setLatitude(atmDto.getLatitude());
+            }
+            if (atmDto.getLongitude() != null) {
+                existingAtm.setLongitude(atmDto.getLongitude());
+            }
+
+            // 2. Campos de status: Estes são 'int' e devem ser sempre atualizados,
+            // pois mesmo que venham como 0 (se omitidos e não houver validação),
+            // eles representam o novo status (cheio/vazio/ligado/desligado).
             existingAtm.setDinheiro(atmDto.getDinheiro());
             existingAtm.setPapel(atmDto.getPapel());
             existingAtm.setLevantamentoSemCartao(atmDto.getLevantamentoSemCartao());
             existingAtm.setSistema(atmDto.getSistema());
+
             return mapToDTO(atmRepository.save(existingAtm));
         });
     }

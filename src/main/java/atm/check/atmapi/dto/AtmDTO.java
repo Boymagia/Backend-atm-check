@@ -8,12 +8,10 @@ public class AtmDTO {
     private String localizacao;
     private Double latitude;
     private Double longitude;
-    
-    // CORREÇÃO: Alterado de Boolean para Integer para aceitar 0/1 do modelo Atm.
-    private Integer dinheiro;
-    private Integer papel;
-    private Integer levantamentoSemCartao;
-    private Integer sistema;
+    private int dinheiro;
+    private int papel;
+    private int levantamentoSemCartao;
+    private int sistema;
 
     // Construtor padrão
     public AtmDTO() {
@@ -25,15 +23,13 @@ public class AtmDTO {
         this.localizacao = atm.getLocalizacao();
         this.latitude = atm.getLatitude();
         this.longitude = atm.getLongitude();
-        
-        // Esta atribuição agora funciona, pois ambos são Integer.
         this.dinheiro = atm.getDinheiro();
         this.papel = atm.getPapel();
         this.levantamentoSemCartao = atm.getLevantamentoSemCartao();
         this.sistema = atm.getSistema();
     }
 
-    // Getters e Setters (ajustados para Integer)
+    // Getters e Setters
     public Integer getId() {
         return id;
     }
@@ -66,35 +62,35 @@ public class AtmDTO {
         this.longitude = longitude;
     }
 
-    public Integer getDinheiro() {
+    public int getDinheiro() {
         return dinheiro;
     }
 
-    public void setDinheiro(Integer dinheiro) {
+    public void setDinheiro(int dinheiro) {
         this.dinheiro = dinheiro;
     }
 
-    public Integer getPapel() {
+    public int getPapel() {
         return papel;
     }
 
-    public void setPapel(Integer papel) {
+    public void setPapel(int papel) {
         this.papel = papel;
     }
 
-    public Integer getLevantamentoSemCartao() {
+    public int getLevantamentoSemCartao() {
         return levantamentoSemCartao;
     }
 
-    public void setLevantamentoSemCartao(Integer levantamentoSemCartao) {
+    public void setLevantamentoSemCartao(int levantamentoSemCartao) {
         this.levantamentoSemCartao = levantamentoSemCartao;
     }
 
-    public Integer getSistema() {
+    public int getSistema() {
         return sistema;
     }
 
-    public void setSistema(Integer sistema) {
+    public void setSistema(int sistema) {
         this.sistema = sistema;
     }
 }

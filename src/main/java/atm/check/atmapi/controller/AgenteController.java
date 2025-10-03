@@ -42,7 +42,7 @@ public class AgenteController {
                      .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // NOVO ENDPOINT: Retorna a contagem de ATMs para um agente específico.
+    // Endpoint para retornar a contagem de ATMs para um agente específico.
     // Exemplo: GET /agentes/1/atm-count
     @GetMapping("/{id}/atm-count")
     public ResponseEntity<Long> getAtmCountForAgente(@PathVariable Integer id) {
@@ -83,10 +83,12 @@ public class AgenteController {
     }
 
     // Endpoint para atualizar um agente existente
+    // Rota: PUT /agentes/{id}
     @PutMapping("/{id}")
     public ResponseEntity<Agente> updateAgente(@PathVariable Integer id, @RequestBody Agente agenteAtualizado) {
         Optional<Agente> agente = agenteService.updateAgente(id, agenteAtualizado);
         
+        // Retorna 200 OK se atualizado, ou 404 Not Found se o agente não existir.
         return agente.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                      .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

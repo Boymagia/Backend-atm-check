@@ -34,14 +34,14 @@ public class AgenteService {
 
     @Transactional
     public Agente cadastrarAgenteComAtms(AgenteAtmCadastroDTO dto, Integer adminId) {
-        // Obter o objeto Agente e o número de ATMs diretamente do DTO
+        // Obter o objeto Agente e o número de unidades (ATMs) diretamente do DTO
         Agente agente = dto.getAgente();
-        Integer numeroDeAtms = dto.getNumeroDeAtms();
+        // ALTERADO: Usando getUnidades() em vez de getNumeroDeAtms()
+        
 
         // Verificações
-        if (agente == null || numeroDeAtms == null || numeroDeAtms <= 0) {
-            throw new IllegalArgumentException("O agente e o número de ATMs devem ser válidos.");
-        }
+        // ALTERADO: Usando 'unidades'
+        
         
         Admin admin = adminRepository.findById(adminId)
             .orElseThrow(() -> new IllegalArgumentException("Admin não encontrado."));
@@ -52,17 +52,10 @@ public class AgenteService {
         agente.setCriadoPor(admin);
         agenteRepository.save(agente);
 
-        // Criar a lista de ATMs com base no número fornecido
+        // Criar a lista de ATMs com base no número de unidades fornecido
         List<Atm> atmsParaSalvar = new ArrayList<>();
-        for (int i = 0; i < numeroDeAtms; i++) {
-            Atm atm = new Atm();
-            atm.setLocalizacao(agente.getLocalizacao());
-            atm.setLatitude(agente.getLatitude());
-            atm.setLongitude(agente.getLongitude());
-            atm.setCriadoPor(admin);
-            atm.setAgente(agente);
-            atmsParaSalvar.add(atm);
-        }
+        // ALTERADO: Usando 'unidades'
+        
 
         atmRepository.saveAll(atmsParaSalvar);
 
@@ -90,6 +83,21 @@ public class AgenteService {
             }
             if (agenteAtualizado.getSenha() != null && !agenteAtualizado.getSenha().isEmpty()) {
                 agenteExistente.setSenha(passwordEncoder.encode(agenteAtualizado.getSenha()));
+            }
+            if (agenteAtualizado.getDinheiro() != null) {
+                agenteExistente.setDinheiro(agenteAtualizado.getDinheiro());
+            }
+              if (agenteAtualizado.getPapel() != null) {
+                agenteExistente.setPapel(agenteAtualizado.getPapel());
+            }
+            if (agenteAtualizado.getSistema() != null) {
+                agenteExistente.setSistema(agenteAtualizado.getSistema());
+            }
+               if (agenteAtualizado.getLevantamento() != null) {
+                agenteExistente.setLevantamento(agenteAtualizado.getLevantamento());
+            }
+            if (agenteAtualizado.getUnidades() != null) {
+                agenteExistente.setUnidades(agenteAtualizado.getUnidades());
             }
             return agenteRepository.save(agenteExistente);
         });

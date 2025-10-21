@@ -17,6 +17,7 @@ public interface AgenteRepository extends JpaRepository<Agente, Integer> {
 
     // Método reintroduzido para o login (findByUsuarioAndSenha)
     Optional<Agente> findByUsuarioAndSenha(String usuario, String senha);
+    
 
     // NOVO MÉTODO: Conta o número de ATMs associados a um agente específico.
     // O filtro "WHERE a.agente.id = :agenteId" garante que a contagem é individual,

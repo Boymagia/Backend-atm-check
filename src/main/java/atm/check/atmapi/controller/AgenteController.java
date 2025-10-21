@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import atm.check.atmapi.dto.AgenteAtmCadastroDTO;
 import atm.check.atmapi.model.Agente;
@@ -44,7 +45,7 @@ public class AgenteController {
 
     // Endpoint para retornar a contagem de ATMs para um agente específico.
     // Exemplo: GET /agentes/1/atm-count
-    @GetMapping("/{id}/atm-count")
+    @GetMapping("/{id}/cliente-")
     public ResponseEntity<Long> getAtmCountForAgente(@PathVariable Integer id) {
         try {
             Long atmCount = agenteService.countAtmsForAgente(id);
@@ -62,11 +63,18 @@ public class AgenteController {
     public ResponseEntity<Agente> cadastrarAgenteComAtms(@RequestBody AgenteAtmCadastroDTO dto,
                                                          @RequestParam("adminId") Integer adminId) {
         try {
+            // Se o serviço for bem-sucedido, retorna 201 Created
             Agente novoAgente = agenteService.cadastrarAgenteComAtms(dto, adminId);
             return new ResponseEntity<>(novoAgente, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            // Em caso de erro de validação ou admin não encontrado
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            
+        } catch (IllegalArgumentException e) {
+            // Captura erros de validação (Admin não encontrado, DTO inválido, etc.)
+            // Retorna um status HTTP 400 Bad Request com a mensagem de erro
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            
+        } catch (Exception e) {
+            // Captura qualquer outro erro inesperado e retorna 500 Internal Server Error
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno ao cadastrar Agente e ATMs.", e);
         }
     }
 
@@ -96,6 +104,8 @@ public class AgenteController {
     
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAgenteById(@PathVariable Integer id) {
+        // Assume-se que o serviço irá lançar uma exceção (ou você pode adicionar
+        // uma verificação de existência aqui) se o ID não for encontrado.
         agenteService.deleteAgenteById(id);
         return ResponseEntity.noContent().build();
     }

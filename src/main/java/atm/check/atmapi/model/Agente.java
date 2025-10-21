@@ -1,69 +1,74 @@
 package atm.check.atmapi.model;
 
-import java.io.Serializable;
-import java.util.Objects;
-import java.util.Set;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumn; // IMPORTANTE!
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "agentes")
-public class Agente implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@EntityListeners(AuditingEntityListener.class)
+public class Agente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, nullable = false)
-    private String usuario;
-
+    @NotBlank
     @Column(nullable = false)
-    private String senha;
-
     private String nome;
 
-    @Column
-    private String localizacao;
+    @NotBlank
+    @Column(nullable = false, unique = true)
+    private String usuario;
 
-    @Column
-    private Double latitude; 
+    // A senha será criptografada no Service
+    @Column(nullable = false)
+    private String senha;
+    @Column(nullable = false) 
+    private int unidades;
     
-    @Column
-    private Double longitude; 
+    private String localizacao;
+    private Double latitude;
+    private Double longitude;
+    @Column(name = "dinheiro", nullable = false)
+    private Integer dinheiro;
+    @Column(name = "papel", nullable = false)
+    private Integer papel;
+    @Column(name = "levantamento_sem_cartao", nullable = false)
+    private Integer levantamentoSemCartao;
+    @Column(name = "sistema", nullable = false)
+    private Integer sistema;
 
-    // Adicionado @JsonManagedReference para evitar loop infinito na serialização JSON
-    @OneToMany(mappedBy = "agente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private Set<Atm> atms;
-
+    // --- CORREÇÃO AQUI ---
+    // Hibernate estava a usar 'admin_id', mas a DB espera 'criado_por_admin_id'.
+    // Usamos @JoinColumn para forçar o nome da coluna correto.
     @ManyToOne
-    @JoinColumn(name = "criado_por_admin_id", nullable = false)
+    @JoinColumn(name = "criado_por_admin_id", nullable = false) 
     private Admin criadoPor;
+    // -----------------------
 
+    @CreatedDate
+    @Column(name = "data_criacao", nullable = false, updatable = false)
+    private LocalDateTime dataCriacao;
+    //------
+ 
+    
+    
+    // Construtores, Getters e Setters (Certifique-se de manter os seus originais)
+    
     public Agente() {}
-
-    public Agente(Integer id, String usuario, String senha, String nome, String localizacao, Double latitude, Double longitude) {
-        this.id = id;
-        this.usuario = usuario;
-        this.senha = senha;
-        this.nome = nome;
-        this.localizacao = localizacao;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
 
     // Getters e Setters
     public Integer getId() {
@@ -72,6 +77,14 @@ public class Agente implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getUsuario() {
@@ -90,45 +103,28 @@ public class Agente implements Serializable {
         this.senha = senha;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-    
     public String getLocalizacao() {
         return localizacao;
     }
-    
+
     public void setLocalizacao(String localizacao) {
         this.localizacao = localizacao;
     }
-    
+
     public Double getLatitude() {
         return latitude;
     }
-    
+
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
-    
+
     public Double getLongitude() {
         return longitude;
     }
-    
+
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
-    }
-
-    // Relações
-    public Set<Atm> getAtms() {
-        return atms;
-    }
-
-    public void setAtms(Set<Atm> atms) {
-        this.atms = atms;
     }
 
     public Admin getCriadoPor() {
@@ -139,28 +135,42 @@ public class Agente implements Serializable {
         this.criadoPor = criadoPor;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Agente agente = (Agente) o;
-        return Objects.equals(id, agente.id);
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public void setDinheiro(Integer dinheiro) {
+        this.dinheiro = dinheiro;
+    }
+      public Integer getDinheiro() {
+        return dinheiro;
     }
 
-    @Override
-    public String toString() {
-        return "Agente{" +
-                "id=" + id +
-                ", usuario='" + usuario + '\'' +
-                ", nome='" + nome + '\'' +
-                ", localizacao='" + localizacao + '\'' +
-                ", latitude='" + latitude + '\'' +
-                ", longitude='" + longitude + '\'' +
-                '}';
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+      public void setPapel(Integer papel) {
+        this.papel = papel;
+    }
+      public Integer getPapel() {
+        return papel;
+    }
+      public void setSistema(Integer sistema) {
+        this.sistema = sistema ;
+    }
+      public Integer getSistema() {
+        return sistema;
+    }
+      public void setLevantamento(Integer levantamentoSemCartao ) {
+        this.levantamentoSemCartao = levantamentoSemCartao ;
+    }
+      public Integer getLevantamento() {
+        return levantamentoSemCartao ;
+    }
+    public void setUnidades(Integer unidades ) {
+        this.unidades = unidades;
+    }
+      public Integer getUnidades() {
+        return unidades;
     }
 }
